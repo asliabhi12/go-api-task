@@ -28,13 +28,13 @@ type Library struct {
 	Name string `json:"name"`
 }
 type RequestEvents struct {
-	ReqID        int       `json:"reqId"`
-	BookID       int       `json:"bookId"`   //fk book
-	ReaderID     int       `json:"readerId"` //fk user
-	RequestDate  time.Time `json:"requestDate"`
-	ApprovalDate time.Time `json:"approvalDate"`
-	ApproverID   int       `json:"approverId"` //fk admin
-	RequestType  string    `json:"requestType"`
+	ReqID        int    `json:"reqId"`
+	BookID       int    `json:"bookId"`   //fk book
+	ReaderID     int    `json:"readerId"` //fk user
+	RequestDate  string `json:"requestDate"`
+	ApprovalDate string `json:"approvalDate"`
+	ApproverID   int    `json:"approverId"` //fk admin
+	RequestType  string `json:"requestType"`
 }
 
 type IssueRegistery struct {

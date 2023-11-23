@@ -27,9 +27,9 @@ func main() {
 	router.POST("/signup", controllers.Signup) // w
 	router.POST("/login", controllers.Login) // w
 	router.GET("/validate", middleware.RequireAuth, controllers.Validate) // w
+	router.POST("/request", controllers.CreateRequest) // w
 	router.GET("/request/", controllers.GetAllRequest) // 
 	router.PUT("/request/:reqid/", controllers.UpdateRequestByReqID) // doesn't work
-	router.POST("/request", controllers.CreateRequest)
 
 
 	router.Run()

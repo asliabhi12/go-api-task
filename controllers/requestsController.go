@@ -10,25 +10,16 @@ import (
 )
 
 func CreateRequest(c *gin.Context) {
-	var body struct {
-		ReqID        int       `json:"reqId"`
-		BookID       int       `json:"bookId"`   //fk book
-		ReaderID     int       `json:"readerId"` //fk user
-		RequestDate  time.Time `json:"requestDate"`
-		ApprovalDate time.Time `json:"approvalDate"`
-		ApproverID   int       `json:"approverId"` //fk admin
-		RequestType  string    `json:"requestType"`
-	}
-
+	var body models.RequestEvents
 	c.Bind(&body)
+	now := time.Now()
+	RequestDate := now.Format("2006-01-02")
 
 	request := models.RequestEvents{
 		ReqID:        body.ReqID,
 		BookID:       body.BookID,
 		ReaderID:     body.ReaderID,
-		RequestDate:  body.RequestDate,
-		ApprovalDate: body.ApprovalDate,
-		ApproverID:   body.ApproverID,
+		RequestDate:  RequestDate,
 		RequestType:  body.RequestType,
 	}
 
@@ -64,15 +55,7 @@ func UpdateRequestByReqID(c *gin.Context) {
 	id := c.Param("id")
 
 	// get the data off the req body
-	var body struct {
-		ReqID        int       `json:"reqId"`
-		BookID       int       `json:"bookId"`   //fk book
-		ReaderID     int       `json:"readerId"` //fk user
-		RequestDate  time.Time `json:"requestDate"`
-		ApprovalDate time.Time `json:"approvalDate"`
-		ApproverID   int       `json:"approverId"` //fk admin
-		RequestType  string    `json:"requestType"`
-	}
+	var body models.RequestEvents
 
 	c.Bind(&body)
 
@@ -80,13 +63,15 @@ func UpdateRequestByReqID(c *gin.Context) {
 
 	initializers.DB.Find(&request, id)
 
+	now := time.Now()
+	RequestDate := now.Format("2006-01-02")
+
+
 	initializers.DB.Model(&request).Updates(models.RequestEvents{
 		ReqID:        body.ReqID,
 		BookID:       body.BookID,
 		ReaderID:     body.ReaderID,
-		RequestDate:  body.RequestDate,
-		ApprovalDate: body.ApprovalDate,
-		ApproverID:   body.ApproverID,
+		RequestDate:  RequestDate,
 		RequestType:  body.RequestType,
 	})
 
