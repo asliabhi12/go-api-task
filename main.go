@@ -18,16 +18,18 @@ func main() {
 
 	router := gin.Default()
 
-	router.POST("/library", controllers.CreateLibrary) // 
-	router.GET("/library", controllers.GetAllLibrary) //
-
-	router.POST("/posts", controllers.CreateBook) 
-	router.GET("/posts", controllers.BooksIndex)
-	router.GET("/posts/:id", controllers.BookShow)
-	router.PUT("/posts/:id", controllers.BooksUpdate)
+	router.POST("/library", controllers.CreateLibrary) // w
+	router.GET("/library",middleware.RequireAuth, controllers.GetAllLibrary) // w
+	router.POST("/book", controllers.CreateBook) // w
+	router.GET("/books", controllers.BooksIndex) // w
+	router.GET("/book/:id", controllers.BookShow) // w
+	router.PUT("/book/:id", controllers.BooksUpdate) // w
 	router.POST("/signup", controllers.Signup) // w
 	router.POST("/login", controllers.Login) // w
 	router.GET("/validate", middleware.RequireAuth, controllers.Validate) // w
+	router.GET("/request/", controllers.GetAllRequest) // 
+	router.PUT("/request/:reqid/", controllers.UpdateRequestByReqID) // doesn't work
+	router.POST("/request", controllers.CreateRequest)
 
 
 	router.Run()
