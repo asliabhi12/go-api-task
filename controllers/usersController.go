@@ -16,8 +16,12 @@ import (
 func Signup(c *gin.Context) {
 	// Get the email/pass of req body
 	var body struct {
-		Email    string
-		Password string
+		Name          string `json:"name"`
+		Email         string `json:"email"`
+		Password      string `json:"password"`
+		ContactNumber int    `json:"contactNumber"` // change this to string
+		Role          string `json:"role"`
+		LibId         int    `json:"libId"`
 	}
 
 	if c.Bind(&body) != nil {
@@ -37,7 +41,7 @@ func Signup(c *gin.Context) {
 	}
 
 	// Create the user
-	user := models.User{Email: body.Email, Password: string(hash)}
+	user := models.User{Email: body.Email, Password: string(hash), Name: body.Name, Role: body.Role, LibId: body.LibId, ContactNumber: body.ContactNumber}
 	result := initializers.DB.Create(&user) // pass pointer of data to Create
 
 	if result.Error != nil {
@@ -54,8 +58,8 @@ func Signup(c *gin.Context) {
 func Login(c *gin.Context) {
 	// Get the email/pass of req body
 	var body struct {
-		Email    string
-		Password string
+	Email         string `json:"email"`
+	Password      string `json:"password"`
 	}
 
 	if c.Bind(&body) != nil {

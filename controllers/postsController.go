@@ -7,21 +7,27 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func CreatePost(c *gin.Context) {
+func CreateBook(c *gin.Context) {
 	// get data off req body
 
 	var body struct {
-		Body  string
-		Title string
+		ISBN            int    `json:"isbn"`
+		LibID           int    `json:"libId"`
+		Title           string `json:"title"`
+		Author          string `json:"author"`
+		Publisher       string `json:"publisher"`
+		Version         string `json:"version"`
+		TotalCopies     int    `json:"totalCopies"`
+		AvailableCopies int    `json:"availableCopies"`
 	}
 
 	c.Bind(&body)
 
-	// create a post
+	// create a book
 
-	post := models.Post{Title: body.Title, Body: body.Body}
+	book := models.Book{Title: body.Title, ISBN: body.ISBN, LibID: body.LibID, Author: body.Author, Version: body.Version, TotalCopies: body.TotalCopies, AvailableCopies: body.AvailableCopies}
 
-	result := initializers.DB.Create(&post)
+	result := initializers.DB.Create(&book)
 
 	if result.Error != nil {
 		c.Status(400)
@@ -30,67 +36,72 @@ func CreatePost(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{
-		"post": post,
+		"book": book,
 	})
 }
 
-func PostsIndex(c *gin.Context) {
-	// get the posts
-	var posts []models.Post
-	initializers.DB.Find(&posts)
+func BooksIndex(c *gin.Context) {
+	// get the books
+	var books []models.Book
+	initializers.DB.Find(&books)
 
 	c.JSON(200, gin.H{
-		"posts": posts,
+		"books": books,
 	})
 
 }
 
-func PostShow(c *gin.Context) {
+func BookShow(c *gin.Context) {
 	// get id off the url
 	id := c.Param("id")
 
-	// get the posts
+	// get the books
 
-	var post models.Post
-	initializers.DB.Find(&post, id)
+	var book models.Book
+	initializers.DB.Find(&book, id)
 
 	// resoponding with them
 
 	c.JSON(200, gin.H{
-		"posts": post,
+		"books": book,
 	})
 
 }
 
-
-
-func PostsUpdate (c *gin.Context) {
+func BooksUpdate(c *gin.Context) {
 	// get id off the url
 	id := c.Param("id")
 
-// get the data off the req body
+	// get the data off the req body
 	var body struct {
-		Body  string
-		Title string
+		ISBN            int    `json:"isbn"`
+		LibID           int    `json:"libId"`
+		Title           string `json:"title"`
+		Author          string `json:"author"`
+		Publisher       string `json:"publisher"`
+		Version         string `json:"version"`
+		TotalCopies     int    `json:"totalCopies"`
+		AvailableCopies int    `json:"availableCopies"`
 	}
 
 	c.Bind(&body)
 
-	// find the post we are updating 
-	var post models.Post
-	initializers.DB.Find(&post, id)
+	// find the book we are updating
+	var book models.Book
+	initializers.DB.Find(&book, id)
 
-	// update it 
-	initializers.DB.Model(&post).Updates(models.Post{
-		Title: body.Title,
-		Body: body.Body,
-	})
-
+	// update it
+	initializers.DB.Model(&book).Updates(models.Book{
+		Title:           body.Title,
+		ISBN:            body.ISBN,
+		LibID:           body.LibID,
+		Author:          body.Author,
+		Version:         body.Version,
+		TotalCopies:     body.TotalCopies,
+		AvailableCopies: body.AvailableCopies})
 	// respond with it
 
 	c.JSON(200, gin.H{
-		"posts": post,
+		"books": book,
 	})
 }
-
-
