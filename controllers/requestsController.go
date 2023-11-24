@@ -3,7 +3,7 @@ package controllers
 import (
 	"net/http"
 	"time"
-
+"fmt"
 	"github.com/asliabhi12/api-task/initializers"
 	"github.com/asliabhi12/api-task/models"
 	"github.com/gin-gonic/gin"
@@ -14,6 +14,12 @@ func CreateRequest(c *gin.Context) {
 	c.Bind(&body)
 	now := time.Now()
 	RequestDate := now.Format("2006-01-02")
+
+	fmt.Println("***************")
+
+	fmt.Printf("%T",RequestDate)
+	fmt.Printf("***************")
+
 
 	request := models.RequestEvents{
 		ReqID:        body.ReqID,
@@ -30,10 +36,12 @@ func CreateRequest(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "book created",
-		"request": result,
-	})
+	// c.JSON(http.StatusOK, gin.H{
+	// 	"message": "request created",
+	// 	"request": result,
+	// })
+
+	c.JSON(http.StatusOK, gin.H{"message": "request created"})
 }
 
 func GetAllRequest(c *gin.Context) {
@@ -42,7 +50,7 @@ func GetAllRequest(c *gin.Context) {
 
 	initializers.DB.Find(&requests)
 	c.JSON(http.StatusOK, gin.H{
-		"message": "book created",
+		"message": "Got all requests",
 		"request": requests,
 	})
 
@@ -80,7 +88,22 @@ func UpdateRequestByReqID(c *gin.Context) {
 		"request": request,
 	})
 
+}
 
 
+func GetRequest(c *gin.Context) {
+	// get id off the url
+	id := c.Param("id")
+
+	// get the Request
+
+	var request models.RequestEvents
+	initializers.DB.Find(&request, id)
+
+	// resoponding with them
+
+	c.JSON(200, gin.H{
+		"request": request,
+	})
 
 }

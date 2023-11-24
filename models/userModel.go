@@ -1,6 +1,5 @@
 package models
 
-import "time"
 
 type Book struct {
 	ISBN            int    `json:"isbn"`
@@ -43,9 +42,9 @@ type IssueRegistery struct {
 	ReaderID           int       `json:"readerId"`        //fk users
 	IssueApproverID    int       `json:"issueApproverId"` //fk admin
 	IssueStatus        string    `json:"issueStatus"`
-	IssueDate          time.Time `json:"issueDate"`
-	ExpectedReturnDate time.Time `json:"expectedReturnDate"`
-	ReturnDate         time.Time `json:"returnDate"`
+	IssueDate          string `json:"issueDate"`
+	ExpectedReturnDate string `json:"expectedReturnDate"`
+	ReturnDate         string `json:"returnDate"`
 	ReturnApproverID   int       `json:"returnApproverId"` //fk admin
 
 }
