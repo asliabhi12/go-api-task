@@ -3,7 +3,6 @@ package controllers
 import (
 	"net/http"
 	"time"
-"fmt"
 	"github.com/asliabhi12/api-task/initializers"
 	"github.com/asliabhi12/api-task/models"
 	"github.com/gin-gonic/gin"
@@ -15,10 +14,6 @@ func CreateRequest(c *gin.Context) {
 	now := time.Now()
 	RequestDate := now.Format("2006-01-02")
 
-	fmt.Println("***************")
-
-	fmt.Printf("%T",RequestDate)
-	fmt.Printf("***************")
 
 
 	request := models.RequestEvents{

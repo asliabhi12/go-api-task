@@ -9,17 +9,7 @@ import (
 func CreateBook(c *gin.Context) {
 	// get data off req body
 
-	var body struct {
-		ISBN            int    `json:"isbn"`
-		LibID           int    `json:"libId"`
-		Title           string `json:"title"`
-		Author          string `json:"author"`
-		Publisher       string `json:"publisher"`
-		Version         string `json:"version"`
-		TotalCopies     int    `json:"totalCopies"`
-		AvailableCopies int    `json:"availableCopies"`
-	}
-
+	var body models.Book
 	c.Bind(&body)
 
 	// create a book
@@ -73,16 +63,7 @@ func BooksUpdate(c *gin.Context) {
 	id := c.Param("id")
 
 	// get the data off the req body
-	var body struct {
-		ISBN            int    `json:"isbn"`
-		LibID           int    `json:"libId"`
-		Title           string `json:"title"`
-		Author          string `json:"author"`
-		Publisher       string `json:"publisher"`
-		Version         string `json:"version"`
-		TotalCopies     int    `json:"totalCopies"`
-		AvailableCopies int    `json:"availableCopies"`
-	}
+	var body models.Book
 
 	c.Bind(&body)
 
