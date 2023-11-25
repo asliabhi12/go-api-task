@@ -12,18 +12,20 @@ func CreateBook(c *gin.Context) {
 	var body models.Book
 	c.Bind(&body)
 
+	tx := initializers.DB.Begin()
+	defer tx.Rollback()
 	// create a book
 
 	book := models.Book{Title: body.Title, ISBN: body.ISBN, LibID: body.LibID, Author: body.Author, Version: body.Version, TotalCopies: body.TotalCopies, AvailableCopies: body.AvailableCopies}
 
-	result := initializers.DB.Create(&book)
+	result := tx.Create(&book)
 
 	if result.Error != nil {
 		c.Status(400)
 		return
 
 	}
-
+	tx.Commit()
 	c.JSON(200, gin.H{
 		"book":    book,
 		"message": "Book created successfully",

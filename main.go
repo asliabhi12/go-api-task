@@ -19,7 +19,7 @@ func main() {
 	router := gin.Default()
 
 	router.POST("/library", controllers.CreateLibrary) // w
-	router.GET("/library",middleware.RequireAuth, controllers.GetAllLibrary) // w
+	router.GET("/library", controllers.GetAllLibrary) // w
 	router.POST("/book", controllers.CreateBook) // w
 	router.GET("/books", controllers.BooksIndex) // w
 	router.GET("/book/:id", controllers.BookShow) // w

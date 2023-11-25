@@ -45,5 +45,5 @@ type IssueRegistery struct {
 
 type Library struct {
 	ID   int    `json:"Id" gorm:"primaryKey;`
-	Name string `json:"name" gorm:"UNIQUE_INDEX:compositeindex;type:text;not null"`
+	Name string `json:"name" gorm:"UNIQUE;type:text;not null"`
 }

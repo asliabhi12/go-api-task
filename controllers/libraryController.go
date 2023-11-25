@@ -9,25 +9,36 @@ import (
 )
 
 func CreateLibrary(c *gin.Context) {
-	var body struct {
-		ID   int    `json:"Id"`
-		Name string `json:"name"`
-	}
+	var body models.Library
+
+	tx := initializers.DB.Begin()
+	defer tx.Rollback()
 
 	c.Bind(&body)
 
 	// create a library 
 
-	library := models.Library{Name: body.Name}
+	var library models.Library
 
-	result := initializers.DB.Create(&library) 
-
+	tx.First(&library, "name = ?", body.Name)
+	
+	if library.Name == body.Name {
+		c.JSON(406, gin.H{"message": "Enter a different library name", "Details": body.Name})
+		return
+	}
+	
+	library = models.Library{Name: body.Name}
+	
+	result := tx.Create(&library) 
 
 	if result.Error != nil {
 		c.Status(400)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "something went wrong!!!",
+		})
 		return
 	}
-
+	tx.Commit()
 	c.JSON(http.StatusOK, gin.H{
 		"message ": "created library successfully",
 		"library": library,
