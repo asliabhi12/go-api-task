@@ -16,7 +16,7 @@ type User struct {
 	Name          string `json:"name"`
 	Email         string `json:"email"`
 	Password      string `json:"password"`
-	ContactNumber int    `json:"contactNumber"`
+	ContactNumber string  `json:"contactNumber"`
 	Role          string `json:"role"`
 	LibID         int    `json:"libId"`
 }

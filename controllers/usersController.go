@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"time"
@@ -24,6 +25,20 @@ func Signup(c *gin.Context) {
 		return
 	}
 
+	
+		// Check if a user with role "owner" or "admin" already exists
+		if body.Role == "owner" || body.Role == "admin" {
+			existingUser := models.User{}
+			result := initializers.DB.Where("role = ?", body.Role).First(&existingUser)
+			if result.RowsAffected > 0 {
+				c.JSON(http.StatusConflict, gin.H{
+					"error": fmt.Sprintf("Cannot create more than one user with role %s", body.Role),
+				})
+				return
+			}
+		}
+	
+
 	// Hash the password
 	hash, err := bcrypt.GenerateFromPassword([]byte(body.Password), 10)
 	if err != nil {
@@ -45,14 +60,17 @@ func Signup(c *gin.Context) {
 	}
 
 	// Respond
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, gin.H{
+		"message": "user created successfully",
+		"user":    user,
+	})
 }
 
 func Login(c *gin.Context) {
 	// Get the email/pass of req body
 	var body struct {
-	Email         string `json:"email"`
-	Password      string `json:"password"`
+		Email    string `json:"email"`
+		Password string `json:"password"`
 	}
 
 	if c.Bind(&body) != nil {
