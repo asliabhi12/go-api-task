@@ -18,19 +18,19 @@ func main() {
 
 	router := gin.Default()
 
-	router.POST("/library", controllers.CreateLibrary)                    // w
-	router.GET("/library", controllers.GetAllLibrary)                     // w
-	router.POST("/book", controllers.CreateBook)                          // w
-	router.GET("/books", controllers.BooksIndex)                          // w
-	router.GET("/book/:id", controllers.BookShow)                         // w
-	router.PUT("/book/:id", controllers.BooksUpdate)                      // w
-	router.POST("/signup", controllers.Signup)                            // w
-	router.POST("/login", controllers.Login)                              // w
-	router.GET("/validate", middleware.OwnerAuth ,controllers.Validate) // w
-	router.POST("/request", controllers.CreateRequest)                    // w
-	router.GET("/requests/", controllers.GetAllRequest)                   // w
-	router.GET("/request/:reqid", controllers.GetRequest)
-	router.PUT("/request/:reqid/", controllers.UpdateRequestByReqID) // doesn't work
+	router.POST("/library", middleware.OwnerAuth, controllers.CreateLibrary)  // w
+	router.GET("/library", middleware.OwnerAuth, controllers.GetAllLibrary)   // w
+	router.POST("/book", middleware.AdminAuth, controllers.CreateBook)        // w
+	router.GET("/books", controllers.BooksIndex)                              // w
+	router.GET("/book/:id", controllers.BookShow)                             // w
+	router.PUT("/book/:id", middleware.AdminAuth, controllers.BooksUpdate)    // w
+	router.POST("/signup", controllers.Signup)                                // w
+	router.POST("/login", controllers.Login)                                  // w
+	router.GET("/validate", middleware.OwnerAuth, controllers.Validate)       // w
+	router.POST("/request", controllers.CreateRequest)                        // w
+	router.GET("/requests/", middleware.AdminAuth, controllers.GetAllRequest) // w
+	router.GET("/request/:reqid", middleware.AdminAuth, controllers.GetRequest) //w
+	router.PUT("/request/:reqid/", middleware.AdminAuth, controllers.UpdateRequestByReqID) // w
 
 	router.Run()
 }
