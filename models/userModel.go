@@ -3,7 +3,7 @@ package models
 type Book struct {
 	ISBN            int    `gorm:"primaryKey;column:isbn" json:"isbn"`
 	LibID           int    `json:"libId"`
-	Title           string `jason:"title"`
+	Title           string `json:"title"`
 	Author          string `json:"author"`
 	Publisher       string `json:"publisher"`
 	Version         string `json:"version"`
@@ -14,9 +14,9 @@ type Book struct {
 type User struct {
 	ID            int    `gorm:"primaryKey;column:id" json:"id"`
 	Name          string `json:"name"`
-	Email         string `json:"email"`
+	Email         string `json:"email" gorm:"UNIQUE;type:text;not null"`
 	Password      string `json:"password"`
-	ContactNumber string  `json:"contactNumber"`
+	ContactNumber string `json:"contactNumber"`
 	Role          string `json:"role"`
 	LibID         int    `json:"libId"`
 }
@@ -44,6 +44,6 @@ type IssueRegistery struct {
 }
 
 type Library struct {
-	ID   int    `json:"Id" gorm:"primaryKey;`
+	ID   int    `json:"Id" gorm:"primaryKey;"`
 	Name string `json:"name" gorm:"UNIQUE;type:text;not null"`
 }
