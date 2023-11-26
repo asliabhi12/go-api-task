@@ -16,7 +16,16 @@ func CreateBook(c *gin.Context) {
 	defer tx.Rollback()
 	// create a book
 
-	book := models.Book{Title: body.Title, ISBN: body.ISBN, LibID: body.LibID, Author: body.Author, Version: body.Version, TotalCopies: body.TotalCopies, AvailableCopies: body.AvailableCopies}
+	book := models.Book{
+		Title: body.Title,
+		ISBN: body.ISBN,
+		LibID: body.LibID, 
+		Author: body.Author, 
+		Version: body.Version, 
+		TotalCopies: body.TotalCopies, 
+		AvailableCopies: body.AvailableCopies,
+		Publisher: body.Publisher,
+	}
 
 	result := tx.Create(&book)
 
