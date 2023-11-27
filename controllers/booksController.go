@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"fmt"
+
 	"github.com/asliabhi12/api-task/initializers"
 	"github.com/asliabhi12/api-task/models"
 	"github.com/gin-gonic/gin"
@@ -16,18 +18,43 @@ func CreateBook(c *gin.Context) {
 	defer tx.Rollback()
 	// create a book
 
-	book := models.Book{
-		Title: body.Title,
-		ISBN: body.ISBN,
-		LibID: body.LibID, 
-		Author: body.Author, 
-		Version: body.Version, 
-		TotalCopies: body.TotalCopies, 
-		AvailableCopies: body.AvailableCopies,
-		Publisher: body.Publisher,
+	var existingBook models.Book
+	result := tx.First(&existingBook, "ISBN = ?", body.ISBN)
+
+	if result.Error == nil {
+		// Book already exists, increment the number of available copies
+		existingBook.AvailableCopies += body.AvailableCopies
+		result = tx.Save(&existingBook)
+
+		if result.Error != nil {
+			fmt.Println("Error during save:", result.Error)
+			tx.Rollback()
+			c.Status(400)
+			return
+		}
+
+		// Commit the transaction if everything is successful
+		tx.Commit()
+
+		c.JSON(200, gin.H{
+			"book":    existingBook,
+			"message": "Book already exists. Available copies updated successfully",
+		})
+		return
 	}
 
-	result := tx.Create(&book)
+	book := models.Book{
+		Title:           body.Title,
+		ISBN:            body.ISBN,
+		LibID:           body.LibID,
+		Author:          body.Author,
+		Version:         body.Version,
+		TotalCopies:     body.TotalCopies,
+		AvailableCopies: body.AvailableCopies,
+		Publisher:       body.Publisher,
+	}
+
+	result = tx.Create(&book)
 
 	if result.Error != nil {
 		c.Status(400)
@@ -96,5 +123,57 @@ func BooksUpdate(c *gin.Context) {
 
 	c.JSON(200, gin.H{
 		"books": book,
+	})
+}
+
+
+func RemoveBook(c *gin.Context) {
+	var body models.Book
+	c.Bind(&body)
+
+	tx := initializers.DB.Begin()
+	defer tx.Rollback()
+
+	// Check if the book exists based on ISBN
+	var existingBook models.Book
+	result := tx.First(&existingBook, "ISBN = ?", body.ISBN)
+
+	if result.Error != nil {
+		c.Status(404) // Book not found
+		return
+	}
+
+	// Check if there are any issued copies of the book
+	var issuedCopies int64
+	
+	tx.Model(&models.IssueRegistery{}).Where("ISBN = ? AND IssueStatus = ?", body.ISBN, "Issued").Count(&issuedCopies)
+
+	if issuedCopies > 0 {
+		c.IndentedJSON(400, gin.H{
+			"error":   "Cannot remove book with issued copies",
+			"message": "Please return all issued copies before removing the book",
+		})
+		return
+	}
+
+	// Decrement the available copies
+	existingBook.AvailableCopies -= body.AvailableCopies
+
+	// Save the changes to the existing book
+	result = tx.Save(&existingBook)
+
+	if result.Error != nil {
+		fmt.Println("Error during save:", result.Error)
+		tx.Rollback()
+		c.Status(400)
+		return
+	}
+
+	// Commit the transaction if everything is successful
+	tx.Commit()
+
+	c.JSON(200, gin.H{
+		"book":    existingBook,
+		"message": "Book removed successfully",
 	})
 }

@@ -19,7 +19,8 @@ func CreateRequest(c *gin.Context) {
 
 	result_bookFound := initializers.DB.First(&Book_requested, "ISBN = ?", body.BookID)
 	if result_bookFound.Error != nil {
-		panic(result_bookFound.Error)
+		c.JSON(406, gin.H{"message": "Sorry book not found"})
+		return
 	}
 
 	if Book_requested.AvailableCopies > 0 {
