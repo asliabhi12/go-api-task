@@ -52,6 +52,8 @@ func AdminAuth(c *gin.Context) {
 		// Attach to req
 		c.Set("user", user)
 
+		c.Set("approverId", user.ID)
+
 		// Continue
 		c.Next()
 	} else {
