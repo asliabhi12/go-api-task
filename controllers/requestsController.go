@@ -3,6 +3,7 @@ package controllers
 import (
 	"net/http"
 	"time"
+
 	"github.com/asliabhi12/api-task/initializers"
 	"github.com/asliabhi12/api-task/models"
 	"github.com/gin-gonic/gin"
@@ -14,29 +15,52 @@ func CreateRequest(c *gin.Context) {
 	now := time.Now()
 	RequestDate := now.Format("2006-01-02")
 
+	var Book_requested models.Book
 
-
-	request := models.RequestEvents{
-		ReqID:        body.ReqID,
-		BookID:       body.BookID,
-		ReaderID:     body.ReaderID,
-		RequestDate:  RequestDate,
-		RequestType:  body.RequestType,
+	result_bookFound := initializers.DB.First(&Book_requested, "ISBN = ?", body.BookID)
+	if result_bookFound.Error != nil {
+		panic(result_bookFound.Error)
 	}
 
-	result := initializers.DB.Create(&request)
+	if Book_requested.AvailableCopies > 0 {
 
-	if result.Error != nil{
-		c.Status(400)
-		return
+		request := models.RequestEvents{
+			ReqID:       body.ReqID,
+			BookID:      body.BookID,
+			ReaderID:    body.ReaderID,
+			RequestDate: RequestDate,
+			RequestType: body.RequestType,
+		}
+
+		result := initializers.DB.Create(&request)
+
+		if result.Error != nil {
+			c.Status(400)
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"message": "request created"})
+	} else {
+		// You need to get the nearest date whwn book will be available
+		var nearestReturnDate string
+		var issueRegistry models.IssueRegistery
+
+		// Query the IssueRegistry table to find the nearest return date for the specified ISBN
+		result := initializers.DB.Where("ISBN = ? AND IssueStatus = ?", body.BookID, "Issued").
+			Order("ExpectedReturnDate ASC").
+			First(&issueRegistry)
+
+		if result.Error != nil {
+			nearestReturnDate = "N/A" // Set a default value or handle the case where no records are found
+		} else {
+			nearestReturnDate = issueRegistry.ExpectedReturnDate
+		}
+		c.IndentedJSON(400, gin.H{
+			"error":              "No available copies for the requested book",
+			"nextAvailableDate": nearestReturnDate,
+		})
 	}
 
-	// c.JSON(http.StatusOK, gin.H{
-	// 	"message": "request created",
-	// 	"request": result,
-	// })
-
-	c.JSON(http.StatusOK, gin.H{"message": "request created"})
 }
 
 func GetAllRequest(c *gin.Context) {
@@ -49,11 +73,10 @@ func GetAllRequest(c *gin.Context) {
 		"request": requests,
 	})
 
-
 }
 
 func UpdateRequestByReqID(c *gin.Context) {
-	
+
 	// get id off the url
 	id := c.Param("id")
 
@@ -69,13 +92,12 @@ func UpdateRequestByReqID(c *gin.Context) {
 	now := time.Now()
 	RequestDate := now.Format("2006-01-02")
 
-
 	initializers.DB.Model(&request).Updates(models.RequestEvents{
-		ReqID:        body.ReqID,
-		BookID:       body.BookID,
-		ReaderID:     body.ReaderID,
-		RequestDate:  RequestDate,
-		RequestType:  body.RequestType,
+		ReqID:       body.ReqID,
+		BookID:      body.BookID,
+		ReaderID:    body.ReaderID,
+		RequestDate: RequestDate,
+		RequestType: body.RequestType,
 	})
 
 	c.JSON(http.StatusOK, gin.H{
@@ -84,7 +106,6 @@ func UpdateRequestByReqID(c *gin.Context) {
 	})
 
 }
-
 
 func GetRequest(c *gin.Context) {
 	// get id off the url
