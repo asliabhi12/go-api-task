@@ -43,8 +43,6 @@ func ApproveRequest(c *gin.Context) {
 	}
 
 	// Set the request with the approver ID and approval date
-	body.ApproverID = approverID
-	body.ApprovalDate = approvalDate
 
 	// Update the request in the database
 	if err := tx.Save(&body).Error; err != nil {
@@ -59,7 +57,7 @@ func ApproveRequest(c *gin.Context) {
 		ReaderID:           body.ReaderID,
 		IssueApproverID:    approverID,
 		IssueStatus:        "Issued",
-		IssueDate:          body.RequestDate,
+		IssueDate:          approvalDate,
 		ExpectedReturnDate: now.AddDate(0, 0, 15).Format("2006-01-02"), // Adding 15 days to IssueDate
 	}
 	// Insert the new entry into the Issue Registry
@@ -80,5 +78,4 @@ func ApproveRequest(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Request approved successfully"})
 }
-
 
