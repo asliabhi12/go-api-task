@@ -18,26 +18,19 @@ func Signup(c *gin.Context) {
 	// Get the email/pass of req body
 	var body models.User
 
-	if c.Bind(&body) != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to read body",
-		})
-		return
-	}
+	c.Bind(&body)
 
-	
-		// Check if a user with role "owner" or "admin" already exists
-		if body.Role == "owner" || body.Role == "admin" {
-			existingUser := models.User{}
-			result := initializers.DB.Where("role = ?", body.Role).First(&existingUser)
-			if result.RowsAffected > 0 {
-				c.JSON(http.StatusConflict, gin.H{
-					"error": fmt.Sprintf("Cannot create more than one user with role %s", body.Role),
-				})
-				return
-			}
+	// Check if a user with role "owner" or "admin" already exists
+	if body.Role == "owner" || body.Role == "admin" {
+		existingUser := models.User{}
+		result := initializers.DB.Where("role = ?", body.Role).First(&existingUser)
+		if result.RowsAffected > 0 {
+			c.JSON(http.StatusConflict, gin.H{
+				"error": fmt.Sprintf("Cannot create more than one user with role %s", body.Role),
+			})
+			return
 		}
-	
+	}
 
 	// Hash the password
 	hash, err := bcrypt.GenerateFromPassword([]byte(body.Password), 10)

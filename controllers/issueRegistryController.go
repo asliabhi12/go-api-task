@@ -45,11 +45,21 @@ func ApproveRequest(c *gin.Context) {
 	// Set the request with the approver ID and approval date
 
 	// Update the request in the database
-	if err := tx.Save(&body).Error; err != nil {
-		tx.Rollback()
-		c.JSON(500, gin.H{"error": "Failed to update request"})
-		return
-	}
+
+
+	var updateRequest models.RequestEvents
+
+	tx.Find(&updateRequest, body.ReqID)
+
+
+	tx.Model(&updateRequest).Updates(models.RequestEvents{
+		ApprovalDate: body.ApprovalDate,
+		ApproverID: body.ApproverID,
+	})
+
+	
+
+
 
 	// Create a new entry in the Issue Registry
 	issueRegistry := models.IssueRegistery{
