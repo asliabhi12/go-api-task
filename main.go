@@ -35,6 +35,8 @@ func main() {
 	router.PUT("/request/:reqid/", middleware.AdminAuth, controllers.UpdateRequestByReqID) // w
 
 	router.POST("/approve-request", middleware.AdminAuth, controllers.ApproveRequest)
+	router.GET("/issues", middleware.AdminAuth, controllers.IssuesIndex)
+
 
 	router.Run()
 }
