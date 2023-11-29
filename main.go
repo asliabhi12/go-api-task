@@ -20,7 +20,7 @@ func main() {
 
 	router.POST("/library", middleware.OwnerAuth, controllers.CreateLibrary)               // w
 	router.GET("/library", middleware.OwnerAuth, controllers.GetAllLibrary)                // w
-	router.POST("/book", middleware.AdminAuth, controllers.CreateBook)                     // w
+	router.POST("/book", controllers.CreateBook)                     // w
 	router.GET("/books", controllers.BooksIndex)                                           // w
 	router.GET("/book/:id", controllers.BookShow)                                          // w
 	router.DELETE("/book", middleware.AdminAuth, controllers.RemoveBook)                      // need wrk
@@ -29,7 +29,7 @@ func main() {
 	router.POST("/login", controllers.Login)                                               // w
 	router.GET("/validate", middleware.OwnerAuth, controllers.Validate)                    // w
 	router.POST("/request", controllers.CreateRequest)                                     // w
-	router.GET("/requests/", middleware.AdminAuth, controllers.GetAllRequest)              // w
+	router.GET("/requests/", controllers.GetAllRequest)              // w
 	router.GET("/request/:reqid", middleware.AdminAuth, controllers.GetRequest)            //w
 	router.PUT("/request/:reqid/", middleware.AdminAuth, controllers.UpdateRequestByReqID) // w
 

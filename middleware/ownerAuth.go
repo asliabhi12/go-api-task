@@ -50,8 +50,9 @@ func OwnerAuth(c *gin.Context) {
 		}
 
 		// Attach to req
-		c.Set("user", user)
 
+		
+		c.Set("user", user)
 		// Continue
 		c.Next()
 	} else {

@@ -107,11 +107,21 @@ func Login(c *gin.Context) {
 		})
 		return
 	}
+	
+	var result models.User
+
+	result.Name = user.Name
+	result.ContactNumber = user.ContactNumber
+	result.LibID = user.LibID
+	result.Role = user.Role
+	result.Email = user.Email
+
 
 	// Send it back
 	c.SetSameSite(http.SameSiteLaxMode)
 	c.SetCookie("Authorization", tokenString, 3600*2, "", "", false, true)
 	c.JSON(http.StatusOK, gin.H{
+		"user": result,
 		"message": "User Logged in successfully",
 	})
 }
