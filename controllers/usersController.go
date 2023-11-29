@@ -126,6 +126,16 @@ func Login(c *gin.Context) {
 	})
 }
 
+func Logout(c *gin.Context) {
+    // Unset the token by setting an empty cookie with an expired date
+    c.SetSameSite(http.SameSiteLaxMode)
+    c.SetCookie("Authorization", "", -1, "", "", false, true)
+
+    c.JSON(http.StatusOK, gin.H{
+        "message": "User logged out successfully",
+    })
+}
+
 func Validate(c *gin.Context) {
 	user, _ := c.Get("user")
 	c.JSON(http.StatusOK, gin.H{

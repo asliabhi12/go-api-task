@@ -27,6 +27,7 @@ func main() {
 	router.PUT("/book/:id", middleware.AdminAuth, controllers.BooksUpdate)                 // w
 	router.POST("/signup", controllers.Signup)                                             // w
 	router.POST("/login", controllers.Login)                                               // w
+	router.POST("/logout", controllers.Logout)
 	router.GET("/validate", middleware.OwnerAuth, controllers.Validate)                    // w
 	router.POST("/request", controllers.CreateRequest)                                     // w
 	router.GET("/requests/", controllers.GetAllRequest)              // w
