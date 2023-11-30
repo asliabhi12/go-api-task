@@ -23,7 +23,7 @@ func main() {
 	router.POST("/book", controllers.CreateBook)                     // w
 	router.GET("/books", controllers.BooksIndex)                                           // w
 	router.GET("/book/:id", controllers.BookShow)                                          // w
-	router.DELETE("/book", middleware.AdminAuth, controllers.RemoveBook)                      // need wrk
+	router.DELETE("/book/:isbn", middleware.AdminAuth, controllers.RemoveBook)                      // need wrk
 	router.PUT("/book/:id", middleware.AdminAuth, controllers.BooksUpdate)                 // w
 	router.POST("/signup", controllers.Signup)                                             // w
 	router.POST("/login", controllers.Login)                                               // w
