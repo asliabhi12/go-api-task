@@ -115,6 +115,7 @@ func Login(c *gin.Context) {
 	result.LibID = user.LibID
 	result.Role = user.Role
 	result.Email = user.Email
+	result.ID = user.ID
 
 
 	// Send it back

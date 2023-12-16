@@ -22,7 +22,7 @@ type User struct {
 }
 
 type RequestEvents struct {
-	ReqID        int    `gorm:"primaryKey;column:req_id" json:"reqId"`
+	ReqID        int    `gorm:"primaryKey;column:req_id" json:"req_Id"`
 	BookID       int    `gorm:"foreignKey:ISBN" json:"bookId"`
 	ReaderID     int    `gorm:"foreignKey:ID" json:"readerId"`
 	RequestDate  string `json:"requestDate"`

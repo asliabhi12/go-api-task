@@ -126,119 +126,31 @@ func BooksUpdate(c *gin.Context) {
 	})
 }
 
-
-// func RemoveBook(c *gin.Context) {
-// 	// Retrieve ISBN from the request URL parameters
-// 	isbn := c.Param("isbn")
-
-// 	tx := initializers.DB.Begin()
-// 	defer tx.Rollback()
-
-// 	// Check if the book exists based on ISBN
-// 	var existingBook models.Book
-// 	result := tx.First(&existingBook, "ISBN = ?", isbn)
-
-// 	if result.Error != nil {
-// 		c.Status(404) // Book not found
-// 		return
-// 	}
-
-// 	// Check if there are any issued copies of the book
-// 	var issuedCopies int64
-// 	tx.Model(&models.IssueRegistery{}).Where("ISBN = ? AND IssueStatus = ?", isbn, "Issued").Count(&issuedCopies)
-
-// 	if issuedCopies > 0 {
-// 		c.IndentedJSON(400, gin.H{
-// 			"error":   "Cannot remove book with issued copies",
-// 			"message": "Please return all issued copies before removing the book",
-// 		})
-// 		return
-// 	}
-
-// 	// Decrement the available copies
-// 	existingBook.AvailableCopies -= existingBook.AvailableCopies // Adjust this based on your specific logic
-
-// 	// Save the changes to the existing book
-// 	result = tx.Save(&existingBook)
-
-// 	if result.Error != nil {
-// 		fmt.Println("Error during save:", result.Error)
-// 		tx.Rollback()
-// 		c.Status(400)
-// 		return
-// 	}
-
-// 	// Commit the transaction if everything is successful
-// 	tx.Commit()
-
-// 	c.JSON(200, gin.H{
-// 		"book":    existingBook,
-// 		"message": "Book removed successfully",
-// 	})
-// }
-
-
-package controllers
-
-import (
-	"fmt"
-	"net/http"
-
-	"github.com/gin-gonic/gin"
-	"github.com/yourusername/yourproject/models" // Update with your actual package path
-	"github.com/yourusername/yourproject/initializers" // Update with your actual package path
-)
-
-// DeleteBook deletes a book based on ISBN
 func DeleteBook(c *gin.Context) {
-	// Retrieve ISBN from the URL parameters
-	isbn := c.Param("isbn")
+	// Get book ID from the URL parameter
+	id := c.Param("id")
 
-	// Begin a transaction
-	tx := initializers.DB.Begin()
-	defer tx.Rollback()
-
-	// Check if the book exists based on ISBN
+	// Check if the book with the specified ID exists
 	var existingBook models.Book
-	result := tx.First(&existingBook, "ISBN = ?", isbn)
-
-	if result.Error != nil {
-		c.JSON(http.StatusNotFound, gin.H{
-			"error":   "Book not found",
-			"message": fmt.Sprintf("Book with ISBN %s not found", isbn),
-		})
-		return
-	}
-
-	// Check if there are any issued copies of the book
-	var issuedCopies int64
-	tx.Model(&models.IssueRegistery{}).Where("ISBN = ? AND IssueStatus = ?", isbn, "Issued").Count(&issuedCopies)
-
-	if issuedCopies > 0 {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error":   "Cannot delete book with issued copies",
-			"message": "Please return all issued copies before deleting the book",
+	if result := initializers.DB.First(&existingBook, id); result.Error != nil {
+		// If the book is not found, respond with a 404 status code
+		c.JSON(404, gin.H{
+			"error": "Book not found",
 		})
 		return
 	}
 
 	// Delete the book
-	result = tx.Delete(&existingBook)
-
-	if result.Error != nil {
-		fmt.Println("Error during delete:", result.Error)
-		tx.Rollback()
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error":   "Internal Server Error",
-			"message": "Error deleting the book",
+	if result := initializers.DB.Delete(&existingBook); result.Error != nil {
+		// If an error occurs during deletion, respond with a 500 status code and an error message
+		c.JSON(500, gin.H{
+			"error": "Internal Server Error",
 		})
 		return
 	}
 
-	// Commit the transaction if everything is successful
-	tx.Commit()
-
-	c.JSON(http.StatusOK, gin.H{
-		"message": fmt.Sprintf("Book with ISBN %s deleted successfully", isbn),
+	// Respond with a success message
+	c.JSON(200, gin.H{
+		"message": "Book deleted successfully",
 	})
 }

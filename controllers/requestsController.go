@@ -124,3 +124,29 @@ func GetRequest(c *gin.Context) {
 	})
 
 }
+
+
+//get request related to single user
+
+func GetRequestsForUser(c *gin.Context) {
+	// Get user ID from the URL parameter
+	reader_id:= c.Param("userId")
+
+	// Initialize a slice to store requests related to the user
+	var userRequests []models.RequestEvents
+
+	// Find requests related to the specified user ID
+	if result := initializers.DB.Where("reader_id = ?", reader_id).Find(&userRequests); result.Error != nil {
+		// If an error occurs, respond with a 500 status code and an error message
+		c.JSON(500, gin.H{
+			"error": "Internal Server Error",
+		})
+		return
+	}
+
+	// Respond with the found requests
+	c.JSON(200, gin.H{
+		"userRequests": userRequests,
+	})
+}
+
