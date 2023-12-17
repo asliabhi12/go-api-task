@@ -30,10 +30,10 @@ func main() {
 	router.POST("/logout", controllers.Logout)
 	router.GET("/validate", middleware.OwnerAuth, controllers.Validate)                    // w
 	router.POST("/request", controllers.CreateRequest)                                     // w
-	router.GET("/requests/", controllers.GetAllRequest)              // w
+	router.GET("/requests/",middleware.AdminAuth, controllers.GetAllRequest)              // w
 	router.GET("/request/:reqid", middleware.AdminAuth, controllers.GetRequest)            //w
 	router.PUT("/request/:reqid/", middleware.AdminAuth, controllers.UpdateRequestByReqID) // w
-
+	router.POST("/deny-request", middleware.AdminAuth, controllers.DenyRequest)
 	router.POST("/approve-request", middleware.AdminAuth, controllers.ApproveRequest)
 	router.GET("/issues", middleware.AdminAuth, controllers.IssuesIndex)
 	router.GET("/user-requests/:userId", controllers.GetRequestsForUser)
